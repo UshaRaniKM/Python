@@ -42,7 +42,7 @@ class TextSearcher(object):
                         processed_word = ''
                         if match:
                             processed_word = match.group(0).lower()
-                        self.file_data.append((processed_word, word.strip()))
+                        self.file_data.append(word.strip())
                         self.porcessed_word_index[processed_word].append(idx)
                         self.original_word_index[word.strip()].append(idx)
                         idx += 1
@@ -53,14 +53,13 @@ class TextSearcher(object):
   
     def search(self, word:str, context:int=0)->list:
         size = len(self.file_data)
-        positions = (self.porcessed_word_index.get(word, []) or self.porcessed_word_index.get(word.lower(), []) or 
-            self.original_word_index.get(word, []) or self.original_word_index.get(word) or [] )
+        positions = (self.porcessed_word_index.get(word.lower(), []) or self.original_word_index.get(word, [])  or [] )
 
         output = []
         for i in positions:
             start = max(0, i - context)
             end = min(size, i + context + 1)            
-            snippet = ' '.join(original for _, original in self.file_data[start:end])
+            snippet = ' '.join(original for original in self.file_data[start:end])
             output.append(snippet)
         return output
     
