@@ -11,7 +11,6 @@ class TextSearcher(object):
     def __init__(self):
         self.file_data = []
         self.processed_word_index = defaultdict(list)
-        self.original_word_index = defaultdict(list)
     
     def load(self, file_path: str) -> bool:
         self.file_data = []
@@ -68,15 +67,7 @@ class TextSearcher(object):
             snippet = ' '.join(original for original in self.file_data[start:end])
             output.append(snippet)
         return output
-    
-if __name__ == "__main__" :
 
-        searcher = TextSearcher()
-    
-        print("Current working directory:", os.getcwd())
-        searcher.load("Siddhartha.txt")
-        results = searcher.search("2500-8.txt", 1)
-        print(results, end='')
 
     
 
