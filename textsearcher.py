@@ -10,7 +10,7 @@ class TextSearcher(object):
 
     def __init__(self):
         self.file_data = []
-        self.porcessed_word_index = defaultdict(list)
+        self.processed_word_index = defaultdict(list)
         self.original_word_index = defaultdict(list)
     
     def load(self, file_path: str) -> bool:
@@ -42,9 +42,8 @@ class TextSearcher(object):
                         processed_word = ''
                         if match:
                             processed_word = match.group(0).lower()
+                            self.processed_word_index[processed_word].append((idx, word.strip()))
                         self.file_data.append(word.strip())
-                        self.porcessed_word_index[processed_word].append(idx)
-                        self.original_word_index[word.strip()].append(idx)
                         idx += 1
                 return True
         except Exception as e:
@@ -53,15 +52,31 @@ class TextSearcher(object):
   
     def search(self, word:str, context:int=0)->list:
         size = len(self.file_data)
-        positions = (self.porcessed_word_index.get(word.lower(), []) or self.original_word_index.get(word, [])  or [] )
+
+        match = self.WORD_PATTERN.search(word)
+        matches = None
+        if match:
+            normalized = match.group(0).lower()
+            matches = self.processed_word_index.get(normalized, [])
+            if word !=  match.group(0):
+                matches = [(i, w) for i, w in matches if w == word.strip()]
 
         output = []
-        for i in positions:
+        for i, _ in matches:
             start = max(0, i - context)
             end = min(size, i + context + 1)            
             snippet = ' '.join(original for original in self.file_data[start:end])
             output.append(snippet)
         return output
     
+if __name__ == "__main__" :
 
+        searcher = TextSearcher()
+    
+        print("Current working directory:", os.getcwd())
+        searcher.load("Siddhartha.txt")
+        results = searcher.search("2500-8.txt", 1)
+        print(results, end='')
+
+    
 
